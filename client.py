@@ -1,15 +1,6 @@
 import socket
 import des
 
-def get_valid_ascii_input(prompt):
-    while True:
-        ascii_input = input(prompt)
-        if len(ascii_input) > 0:
-
-            return ascii_input
-        else:
-            print("Input cannot be empty.")
-
 def client_program():
     host = socket.gethostname()
     port = 5000
@@ -36,7 +27,7 @@ def client_program():
         return
 
     # Get user input for plaintext
-    plaintext = get_valid_ascii_input("Enter a plaintext (in ASCII): ")
+    plaintext = des.get_valid_text_input("Enter a plaintext (in ASCII): ")
 
     # Generate round keys
     round_keys = des.generateKeys(bin_key)

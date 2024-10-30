@@ -1,42 +1,29 @@
 import des
 
-def get_valid_binary_input(prompt, length):
-    while True:
-        binary_input = input(prompt)
-        if all(c in '01' for c in binary_input) and len(binary_input) == length:
-            return binary_input
-        else:
-            print(f"Invalid input. Please provide a {length}-bit binary string.")
-
-def get_valid_ascii_input(prompt, length):
-    while True:
-        ascii_input = input(prompt)
-        if len(ascii_input) == length:
-            return ascii_input
-        else:
-            print(f"Invalid input. Please provide exactly {length} characters.")
-
-def encrypt_message():
-    plaintext = get_valid_ascii_input("Enter a plaintext (in ASCII, 8 characters): ", 8)
-    bin_plaintext = des.text_to_binary(plaintext)[0]
-
-    key = get_valid_ascii_input("Enter a 64-bit DES key (in ASCII, 8 characters): ", 8)
+def encrypt():
+    # Get DES key from user
+    key = des.get_valid_key_input("Enter a 64-bit DES key (in ASCII, 8 characters): ")
     bin_key = des.text_to_binary(key)[0]
     print("DES Key (Hex):", des.binary_to_hex(bin_key))
 
+    # Get user input for plaintext
+    plaintext = des.get_valid_text_input("Enter a plaintext (in ASCII, 8 characters): ")
+
+    # Generate round keys
     round_keys = des.generateKeys(bin_key)
 
+    # Encrypt the plaintext
     print("Encrypting...")
-    ciphertext = des.encrypt(bin_plaintext, round_keys)
+    ciphertext = des.encrypt_message(plaintext, round_keys)
 
     print("Ciphertext (Binary):", ciphertext)
     print("Ciphertext (Hex):", des.binary_to_hex(ciphertext))
     return ciphertext, round_keys
 
-def decrypt_message(ciphertext, round_keys):
+def decrypt(ciphertext, round_keys):
+    # Decrypt the encrypted text
     print("Decrypting...")
-    plaintext_binary = des.decrypt(ciphertext, round_keys)
-    plaintext = des.binary_to_text(plaintext_binary)
+    plaintext = des.decrypt_message(ciphertext, round_keys)
 
     print("Recovered Plaintext:", plaintext)
     return plaintext
@@ -50,12 +37,12 @@ if __name__ == "__main__":
         choice = input("Choose an option (1/2/3): ")
 
         if choice == "1":
-            ciphertext, round_keys = encrypt_message()
+            ciphertext, round_keys = encrypt()
         elif choice == "2":
             if 'ciphertext' not in locals() or 'round_keys' not in locals():
                 print("No ciphertext available. Please perform encryption first.")
             else:
-                decrypt_message(ciphertext, round_keys)
+                decrypt(ciphertext, round_keys)
         elif choice == "3":
             print("Exiting...")
             break

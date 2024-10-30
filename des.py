@@ -9,6 +9,26 @@ def get_valid_key_input(prompt):
         else:
             print("Input must be 8 characters long.")
 
+# Make sure the text input is not empty
+def get_valid_text_input(prompt):
+    while True:
+        text_input = input(prompt)
+        if len(text_input) > 0:
+            return text_input
+        else:
+            print("Input cannot be empty.")
+
+# Add padding to plaintext
+def pad_text(plaintext):
+    padding_length = 8 - (len(plaintext) % 8)
+    padding = chr(padding_length) * padding_length
+    return plaintext + padding
+
+# Unpadding the padded plaintext
+def unpad_text(padded_plaintext):
+    padding_length = ord(padded_plaintext[-1])
+    return padded_plaintext[:-padding_length]
+
 # Convert text to binary representation
 def text_to_binary(text):
     binary_result = ""
@@ -106,6 +126,10 @@ def decrypt(ciphertext, round_keys):
 # DES encryption function (handles multiple 64-bit blocks)
 def encrypt_message(plaintext, round_keys):
     ciphertext = ""
+
+    # Pad the plaintext to be a multiple of 8
+    plaintext = pad_text(plaintext)
+
     # Process each 64-bit block
     for block in text_to_binary(plaintext):
         encrypted_block = encrypt(block, round_keys)
@@ -115,10 +139,15 @@ def encrypt_message(plaintext, round_keys):
 # DES decryption function (handles multiple 64-bit blocks)
 def decrypt_message(ciphertext, round_keys):
     plaintext = ""
+
     # Process each 64-bit block
     blocks = [ciphertext[i:i+64] for i in range(0, len(ciphertext), 64)]
     for block in blocks:
         decrypted_block = decrypt(block, round_keys)
         plaintext += decrypted_block
-    return binary_to_text([plaintext])
+    plaintext = binary_to_text([plaintext])
 
+    # Unpad the decrypted text
+    plaintext = unpad_text(plaintext)
+
+    return plaintext
