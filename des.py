@@ -1,5 +1,14 @@
 import table as t
 
+# Make sure the DES key input is exactly 8 characters long
+def get_valid_key_input(prompt):
+    while True:
+        key_input = input(prompt)
+        if len(key_input) == 8:
+            return key_input
+        else:
+            print("Input must be 8 characters long.")
+
 # Convert text to binary representation
 def text_to_binary(text):
     binary_result = ""
