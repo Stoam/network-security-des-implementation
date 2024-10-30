@@ -1,14 +1,6 @@
 import socket
 import des
 
-def get_valid_ascii_input(prompt):
-    while True:
-        ascii_input = input(prompt)
-        if len(ascii_input) == 8:
-            return ascii_input
-        else:
-            print("Input must be 8 characters long.")
-
 def server_program():
     # Get the hostname
     host = socket.gethostname()
@@ -26,11 +18,28 @@ def server_program():
     print("Connection from:", str(address))
 
     # Get the decryption key
-    key = get_valid_ascii_input("Enter a 64-bit DES key (in ASCII, 8 characters): ")
+    key = des.get_valid_key_input("Enter a 64-bit DES key (in ASCII, 8 characters): ")
     bin_key = des.text_to_binary(key)[0]
     print("DES Key (Hex):", des.binary_to_hex(bin_key))
 
-    print("Waiting for encrypted message from the client...")
+    print("Waiting for the client's key...")
+
+    # Receive the client's key
+    client_key = conn.recv(1024).decode()
+
+    # Check if keys match
+    if client_key != key:
+        error_message = "Error: Keys do not match. Connection will be closed."
+        conn.send(error_message.encode())
+        print(error_message)
+        conn.close()
+        return
+    
+    # Send acknowledgment
+    ack = "Key received."
+    conn.send(ack.encode())
+
+    print(ack + " Waiting for encrypted message from the client...")
 
     # Generate round keys
     round_keys = des.generateKeys(bin_key)
