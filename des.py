@@ -94,3 +94,22 @@ def decrypt(ciphertext, round_keys):
     rev_round_keys = round_keys[::-1]
     return encrypt(ciphertext, rev_round_keys)
 
+# DES encryption function (handles multiple 64-bit blocks)
+def encrypt_message(plaintext, round_keys):
+    ciphertext = ""
+    # Process each 64-bit block
+    for block in text_to_binary(plaintext):
+        encrypted_block = encrypt(block, round_keys)
+        ciphertext += encrypted_block
+    return ciphertext
+
+# DES decryption function (handles multiple 64-bit blocks)
+def decrypt_message(ciphertext, round_keys):
+    plaintext = ""
+    # Process each 64-bit block
+    blocks = [ciphertext[i:i+64] for i in range(0, len(ciphertext), 64)]
+    for block in blocks:
+        decrypted_block = decrypt(block, round_keys)
+        plaintext += decrypted_block
+    return binary_to_text([plaintext])
+
